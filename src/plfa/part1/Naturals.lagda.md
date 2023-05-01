@@ -78,7 +78,8 @@ successor of two; and so on.
 Write out `7` in longhand.
 
 ```agda
--- Your code goes here
+seven : ℕ
+seven = suc (suc (suc (suc (suc (suc (suc (zero)))))))
 ```
 
 You will need to give both a type signature and definition for the
@@ -430,7 +431,21 @@ other word for evidence, which we will use interchangeably, is _proof_.
 Compute `3 + 4`, writing out your reasoning as a chain of equations, using the equations for `+`.
 
 ```agda
--- Your code goes here
++-example : 3 + 4 ≡ 7
++-example =
+  begin
+    3 + 4
+  ≡⟨⟩
+    suc (2 + 4)
+  ≡⟨⟩
+    suc (suc (1 + 4))
+  ≡⟨⟩
+    suc (suc (suc (0 + 4)))
+  ≡⟨⟩
+    suc (suc (suc 4))
+  ≡⟨⟩
+    7
+  ∎
 ```
 
 
@@ -492,7 +507,21 @@ Compute `3 * 4`, writing out your reasoning as a chain of equations, using the e
 (You do not need to step through the evaluation of `+`.)
 
 ```agda
--- Your code goes here
+*-example : 3 * 4 ≡ 12
+*-example =
+  begin
+    3 * 4
+  ≡⟨⟩
+    4 + (2 * 4)
+  ≡⟨⟩
+    4 + (4 + (1 * 4))
+  ≡⟨⟩
+    4 + (4 + (4 + (0 * 4)))
+  ≡⟨⟩
+    4 + (4 + (4 + 0))
+  ≡⟨⟩
+    12
+  ∎
 ```
 
 
@@ -506,7 +535,26 @@ Define exponentiation, which is given by the following equations:
 Check that `3 ^ 4` is `81`.
 
 ```agda
--- Your code goes here
+_^_ : ℕ → ℕ → ℕ
+m ^ zero = 1
+m ^ (suc n) = m * (m ^ n)
+
+_ =
+  begin
+    3 ^ 4
+  ≡⟨⟩
+    3 * (3 ^ 3)
+  ≡⟨⟩
+    3 * (3 * (3 ^ 2))
+  ≡⟨⟩
+    3 * (3 * (3 * (3 ^ 1)))
+  ≡⟨⟩
+    3 * (3 * (3 * (3 * (3 ^ 0))))
+  ≡⟨⟩
+    3 * (3 * (3 * (3 * 1)))
+  ≡⟨⟩
+    81
+  ∎
 ```
 
 
@@ -589,7 +637,31 @@ Section [Logical Connectives](/Decidable/#logical-connectives).
 Compute `5 ∸ 3` and `3 ∸ 5`, writing out your reasoning as a chain of equations.
 
 ```agda
--- Your code goes here
+∸-example₁ =
+  begin
+    5 ∸ 3
+  ≡⟨⟩
+    4 ∸ 2
+  ≡⟨⟩
+    3 ∸ 1
+  ≡⟨⟩
+    2 ∸ 0
+  ≡⟨⟩
+    2
+  ∎
+
+∸-example₂ =
+  begin
+    3 ∸ 5
+  ≡⟨⟩
+    2 ∸ 4
+  ≡⟨⟩
+    1 ∸ 3
+  ≡⟨⟩
+    0 ∸ 2
+  ≡⟨⟩
+    0
+  ∎
 ```
 
 
@@ -936,7 +1008,64 @@ represents a positive natural, and represent zero by `⟨⟩ O`.
 Confirm that these both give the correct answer for zero through four.
 
 ```agda
--- Your code goes here
+inc : Bin → Bin
+inc ⟨⟩ = ⟨⟩ I
+inc (x O) = x I
+inc (x I) = (inc x) O
+
+_ =
+  begin
+    inc (inc (inc (inc ⟨⟩)))
+  ≡⟨⟩
+    inc (inc (inc (⟨⟩ I)))
+  ≡⟨⟩
+    inc (inc (⟨⟩ I O))
+  ≡⟨⟩
+    inc (⟨⟩ I I)
+  ≡⟨⟩
+    ⟨⟩ I O O
+  ∎
+
+to : ℕ → Bin
+to zero = ⟨⟩
+to (suc x) = inc (to x)
+
+_ =
+  begin
+    to 4
+  ≡⟨⟩
+    inc (to 3)
+  ≡⟨⟩
+    inc (inc (to 2))
+  ≡⟨⟩
+    inc (inc (inc (to 1)))
+  ≡⟨⟩
+    inc (inc (inc (inc (to 0))))
+  ≡⟨⟩
+    inc (inc (inc (inc ⟨⟩)))
+  ≡⟨⟩
+    ⟨⟩ I O O
+  ∎
+
+from : Bin → ℕ
+from ⟨⟩ = zero
+from (x O) = from x + from x
+from (x I) = suc (from x + from x)
+
+_ =
+  begin
+    from (⟨⟩ I O O)
+  ≡⟨⟩
+    from (⟨⟩ I O) + from (⟨⟩ I O)
+  ≡⟨⟩
+    from (⟨⟩ I) + from (⟨⟩ I) + from (⟨⟩ I) + from (⟨⟩ I)
+  ≡⟨⟩
+    suc (from ⟨⟩ + from ⟨⟩) * 4
+  ≡⟨⟩
+    suc (0) * 4
+  ≡⟨⟩
+    4
+  ∎
 ```
 
 
