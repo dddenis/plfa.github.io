@@ -874,7 +874,8 @@ just apply the previous results which show addition
 is associative and commutative.
 
 ```agda
--- Your code goes here
++-swap : ∀ (m n p : ℕ) → m + (n + p) ≡ n + (m + p)
++-swap m n p rewrite +-comm′ m (n + p) | +-assoc′ n p m | +-comm′ p m = refl
 ```
 
 
@@ -887,7 +888,25 @@ Show multiplication distributes over addition, that is,
 for all naturals `m`, `n`, and `p`.
 
 ```agda
--- Your code goes here
+*-zero : ∀ (n : ℕ) → n * zero ≡ zero
+*-zero zero = refl
+*-zero (suc n) rewrite *-zero n = refl
+
+*-suc : ∀ (m n : ℕ) → m * suc n ≡ m + (m * n)
+*-suc zero n = refl
+*-suc (suc m) n rewrite *-suc m n | +-swap n m (m * n) = refl
+
+*-distrib-+ : ∀ (m n p : ℕ) → (m + n) * p ≡ m * p + n * p
+*-distrib-+ m n zero rewrite *-zero (m + n) | *-zero m | *-zero n = refl
+*-distrib-+ m n (suc p) rewrite
+  *-suc (m + n) p |
+  *-distrib-+ m n p |
+  +-assoc′ m n (m * p + n * p) |
+  +-swap n (m * p) (n * p) |
+  sym (*-suc n p) |
+  sym (+-assoc′ m (m * p) (n * suc p)) |
+  sym (*-suc m p)
+  = refl
 ```
 
 
@@ -900,7 +919,9 @@ Show multiplication is associative, that is,
 for all naturals `m`, `n`, and `p`.
 
 ```agda
--- Your code goes here
+*-assoc : ∀ (m n p : ℕ) → (m * n) * p ≡ m * (n * p)
+*-assoc zero n p = refl
+*-assoc (suc m) n p rewrite *-distrib-+ n (m * n) p | *-assoc m n p = refl
 ```
 
 
@@ -914,7 +935,9 @@ for all naturals `m` and `n`.  As with commutativity of addition,
 you will need to formulate and prove suitable lemmas.
 
 ```agda
--- Your code goes here
+*-comm : ∀ (m n : ℕ) → m * n ≡ n * m
+*-comm zero n rewrite *-zero n = refl
+*-comm (suc m) n rewrite *-comm m n | sym (*-suc n m) = refl
 ```
 
 
@@ -927,7 +950,9 @@ Show
 for all naturals `n`. Did your proof require induction?
 
 ```agda
--- Your code goes here
+0∸n≡0 : ∀ (n : ℕ) → 0 ∸ n ≡ 0
+0∸n≡0 zero = refl
+0∸n≡0 (suc _) = refl
 ```
 
 
@@ -940,7 +965,11 @@ Show that monus associates with addition, that is,
 for all naturals `m`, `n`, and `p`.
 
 ```agda
--- Your code goes here
+∸-+-assoc : ∀ (m n p : ℕ) → (m ∸ n) ∸ p ≡ m ∸ (n + p)
+∸-+-assoc zero zero p = refl
+∸-+-assoc zero (suc n) p rewrite 0∸n≡0 p = refl
+∸-+-assoc (suc m) zero p = refl
+∸-+-assoc (suc m) (suc n) p rewrite ∸-+-assoc m n p = refl
 ```
 
 
@@ -955,7 +984,36 @@ Show the following three laws
 for all `m`, `n`, and `p`.
 
 ```
--- Your code goes here
+*-identity : ∀ (m : ℕ) → m * 1 ≡ m
+*-identity zero = refl
+*-identity (suc m) rewrite *-identity m = refl
+
+^-distribˡ-+-* : ∀ (m n p : ℕ) → m ^ (n + p) ≡ (m ^ n) * (m ^ p)
+^-distribˡ-+-* m zero zero = refl
+^-distribˡ-+-* m zero (suc p) rewrite +-identity′ (m * (m ^ p)) = refl
+^-distribˡ-+-* m (suc n) zero rewrite +-identity′ n | *-identity (m * (m ^ n)) = refl
+^-distribˡ-+-* m (suc n) (suc p) rewrite
+  +-suc′ n p |
+  ^-distribˡ-+-* m n p |
+  sym (*-assoc m (m ^ n) (m ^ p)) |
+  sym (*-assoc m (m * (m ^ n)) (m ^ p)) |
+  *-comm m (m * (m ^ n)) |
+  *-assoc (m * (m ^ n)) m (m ^ p)
+  = refl
+
+^-distribʳ-* : ∀ (m n p : ℕ) → (m * n) ^ p ≡ (m ^ p) * (n ^ p)
+^-distribʳ-* m n zero = refl
+^-distribʳ-* m n (suc p) rewrite
+  ^-distribʳ-* m n p |
+  *-assoc m n ((m ^ p) * (n ^ p)) |
+  *-comm (m ^ p) (n ^ p) |
+  sym (*-assoc n (n ^ p) (m ^ p)) |
+  *-comm (n * (n ^ p)) (m ^ p) |
+  sym (*-assoc m (m ^ p) (n * (n ^ p)))
+  = refl
+
+^-*-assoc : ∀ (m n p : ℕ) → (m ^ n) ^ p ≡ m ^ (n * p)
+^-*-assoc m n p = {!!}
 ```
 
 
